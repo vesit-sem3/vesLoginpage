@@ -1,0 +1,131 @@
+//admin login page
+
+package swingemo;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.Color;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class demoo extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	private JTextField txtName;
+	private JTextField txtAge;
+	JLabel lblInfo;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					demoo frame = new demoo();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public demoo() {
+		setTitle("Admin Login");
+		setBackground(new Color(0, 0, 0));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 588, 395);
+		contentPane = new JPanel();
+		contentPane.setBackground(new Color(0, 128, 128));
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("Enter Username");
+		lblNewLabel.setForeground(new Color(0, 0, 0));
+		lblNewLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+		lblNewLabel.setBounds(40, 106, 158, 41);
+		contentPane.add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("Enter Password");
+		lblNewLabel_1.setForeground(new Color(0, 0, 0));
+		lblNewLabel_1.setFont(new Font("Verdana", Font.BOLD, 16));
+		lblNewLabel_1.setBounds(40, 193, 203, 41);
+		contentPane.add(lblNewLabel_1);
+		
+		JButton btnOk = new JButton("Login");
+		btnOk.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String n=txtName.getText();
+				int age=Integer.parseInt(txtAge.getText());
+				if(n.equals("vesit") && age==123456)
+					lblInfo.setText("              WELCOME");
+				else
+					lblInfo.setText("Username or Password is Incorrect");
+//				
+//				Adminpg nw= new Adminpg();
+//				nw.NewScreen();
+			
+			
+			}
+		});
+		btnOk.setBounds(78, 288, 89, 23);
+		contentPane.add(btnOk);
+		
+		JButton btnReset = new JButton("Reset");
+		btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtName.setText("");
+				txtAge.setText("");
+				lblInfo.setText("");
+
+				Adminpg nw= new Adminpg();
+				nw.NewScreen();
+				
+			}
+		});
+		btnReset.setBounds(375, 288, 89, 23);
+		contentPane.add(btnReset);
+		
+		txtName = new JTextField();
+		txtName.setBounds(261, 109, 203, 41);
+		contentPane.add(txtName);
+		txtName.setColumns(10);
+		
+		txtAge = new JTextField();
+		txtAge.setBounds(261, 196, 203, 41);
+		contentPane.add(txtAge);
+		txtAge.setColumns(10);
+		
+        lblInfo = new JLabel("");
+        lblInfo.setForeground(new Color(255, 0, 0));
+        lblInfo.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        lblInfo.setBounds(130, 322, 345, 23);
+        contentPane.add(lblInfo);
+        
+        JLabel lblNewLabel_2 = new JLabel("VES Canteen");
+        lblNewLabel_2.setForeground(new Color(218, 165, 32));
+        lblNewLabel_2.setFont(new Font("Viner Hand ITC", Font.BOLD | Font.ITALIC, 30));
+        lblNewLabel_2.setBounds(173, -2, 302, 97);
+        contentPane.add(lblNewLabel_2);
+        
+        JLabel lblNewLabel_3 = new JLabel("Admin Login");
+        lblNewLabel_3.setFont(new Font("Arial", Font.ITALIC, 16));
+        lblNewLabel_3.setBounds(208, 63, 130, 51);
+        contentPane.add(lblNewLabel_3);
+    }
+}
