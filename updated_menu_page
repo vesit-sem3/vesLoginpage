@@ -1,0 +1,156 @@
+package kaaranedit;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.lang.Math;
+import javax.swing.border.Border;
+import java.io.*;
+import java.sql.*;
+import java.awt.EventQueue;
+import java.sql.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+public class Menu extends JFrame implements ActionListener {
+
+    JButton Pay;
+    String text;
+    String url = "jdbc:mysql://localhost:3306/canteen_management";
+    String user = "root";
+    String password = "karan1010";
+
+    int c;
+    int max = 100;
+    int min = 1;
+    int range = max - min + 1;
+    int token = (int) (Math.random() * range) + min;
+    JScrollPane scrollpane;
+    String Items[] = {"  Chinese Samosa ", "  Vada Pav ", "  Chhole Bhature ", "  Dosa ", "  Medu Vada(2_P) ", "  Misal Pav ", "  Thali "};
+    int price[] = { 16, 14, 52, 30, 30, 25, 50};
+    int Total;
+    JTextField field[][] = new JTextField[8][1];
+    JLabel totalLabel;
+    Border border = BorderFactory.createLineBorder(Color.cyan, 3);
+    private JLabel lblNewLabel;
+
+
+    public Menu() {
+        super("MENU");
+        setBackground(new Color(47, 79, 79));
+        setSize(500, 500);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        init();
+        setVisible(true);
+    }
+
+    public void init () {
+
+        JPanel p = new JPanel();
+        p.setBackground(new Color(245, 245, 220));
+        p.setSize(600, 600);
+        p.setLayout(new GridLayout(9, 2, 7, 7));
+        for (int row = 0; row < 9; row++) {
+            ButtonGroup bg = new ButtonGroup();
+            for (int col = 0; col < 2; col++) {
+                if (row == 0) {
+                    p.add(new JLabel(" "));
+                } else {
+                    if (col == 0 && row != 8) {
+                        p.add(new JLabel(Items[row - 1] + "-" + price[row - 1] + "Rs"));
+                    } else if (row == 8 && col == 0) {
+                        Pay = new JButton("PAY");
+                        Pay.setSize(new Dimension(100, 100));
+                        Pay.addActionListener(this);
+                        Pay.setFocusable(false);
+                        p.add(Pay);
+                        break;
+                    } else if (row < 8 && col == 1) {
+                        field[row - 1][col - 1] = new JTextField();
+                        field[row - 1][col - 1].setPreferredSize(new Dimension(250, 50));
+                        field[row - 1][col - 1].addActionListener(this);
+                        field[row - 1][col - 1].setText("");
+                        p.add(field[row - 1][col - 1]);
+                    }
+                }
+            }
+        }
+        scrollpane = new JScrollPane(p);
+        
+        lblNewLabel = new JLabel("                                   ENTER YOUR ORDER HERE");
+        lblNewLabel.setFont(new Font("Bradley Hand ITC", Font.BOLD, 15));
+        lblNewLabel.setBackground(new Color(0, 128, 0));
+        p.add(lblNewLabel);
+        getContentPane().add(scrollpane, BorderLayout.CENTER);
+        totalLabel = new JLabel("Total: 0 Rs");
+        totalLabel.setBackground(new Color(0, 0, 0));
+        totalLabel.setHorizontalAlignment(JLabel.CENTER);
+        totalLabel.setBorder(border);
+        getContentPane().add(totalLabel, BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void actionPerformed (ActionEvent e){
+        Object source = e.getSource();
+        if (source instanceof JTextField) {
+            try {
+                JTextField button = (JTextField) source;
+                int row = -1;
+                int col = -1;
+                for (int i = 0; i < 9; i++) {
+                    for (int j = 2; j <= 2; j++) {
+                        if (field[i][j - 2] == button) {
+                            row = i;
+                            col = j;
+                            break;
+                        }
+                    }
+                    if (row != -1) {
+                        break;
+                    }
+                }
+
+                if (row != -1 && col != -1) {
+                    try {
+                        text = field[row][col - 2].getText();
+                        Class.forName("com.mysql.jdbc.Driver")
+                        Connection con = DriverManager.getConnection(url, user, password);
+                        PreparedStatement ps=con.prepareStatement("INSERT INTO ORDERS(Order_id,Item_name,Item_quantity,Pay_Amount)VALUES(?,?,?,?)");
+                        ps.setInt(1,token);
+                        ps.setString(2,Items[row]);
+                        c = Integer.parseInt(text);
+                        if (c == 0 || c > 100) {
+                            JOptionPane.showMessageDialog(null, "Please Enter a Valid Quantity!", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        ps.setInt(3,c);
+                        Total += c * price[row];
+                        int s_row=c * price[row];
+                        totalLabel.setText("Token: " + token + " Total: " + Total + " Rs");
+
+                        ps.setInt(4,s_row);
+                        ps.execute();
+                        con.close();
+                    }catch (SQLException ex){
+                        System.out.println(ex);
+                    }
+                }
+            } catch (NumberFormatException exc) {
+                JOptionPane.showMessageDialog(null, "Please Enter a Valid Quantity!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (source instanceof JButton) {
+            SwingUtilities.invokeLater(() -> {
+                PayMent payment = new PayMent(token); // Replace "42" with your order ID
+                payment.setVisible(true);
+            });
+        }
+
+    }
+
+
+
+    public static void main (String[]args){
+        new First();
+    }
+}
