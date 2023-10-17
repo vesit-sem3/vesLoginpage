@@ -1,0 +1,122 @@
+package kaaranedit;
+import javax.swing.*;
+import java.awt.Desktop;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URI;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+public class PayMent extends JFrame implements ActionListener {
+    JFrame Pay;
+    String url = "jdbc:mysql://localhost/canteen";
+    String user = "root";
+    String password = "karan1010";
+    JRadioButton GPay;
+    JRadioButton Cash;
+    JRadioButton PayTm;
+   int y;
+    JButton Review;
+
+    PayMent(int x) {
+        y=x;
+         Pay = new JFrame("PayMent");
+         Pay.setBackground(new Color(240, 230, 140));
+        Pay.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        Pay.setLocationRelativeTo(null);
+        Pay.getContentPane().setLayout(new GridLayout(1,3,12,12));
+        GPay = new JRadioButton("Gpay");
+        GPay.setBackground(new Color(211, 211, 211));
+        Cash = new JRadioButton("Cash");
+        Cash.setBackground(new Color(211, 211, 211));
+        PayTm = new JRadioButton("PayTm");
+        PayTm.setBackground(new Color(211, 211, 211));
+        Review=new JButton("Write Review");
+        Review.setFont(new Font("Arial", Font.BOLD, 11));
+        Review.setBackground(new Color(238, 232, 170));
+        Review.setBounds(100,100,95,95);
+        GPay.addActionListener(this);
+        PayTm.addActionListener(this);
+        Review.addActionListener(this);
+        Review.setFocusable(false);
+        ButtonGroup Method = new ButtonGroup();
+        Method.add(GPay);
+        Method.add(Cash);
+        Method.add(PayTm);
+        Pay.getContentPane().add(GPay);
+        Pay.getContentPane().add(Cash);
+        Pay.getContentPane().add(PayTm);
+        Pay.getContentPane().add(Review);
+        Pay.pack();
+        Pay.setVisible(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            Desktop d = Desktop.getDesktop();
+            if (e.getSource() == GPay) {
+                d.browse(new URI("https://pay.google.com/about/"));
+                try{
+
+                    Connection con = DriverManager.getConnection(url, user, password);
+                    PreparedStatement ps = con.prepareStatement("update orders set Pay_Mode='GPay', Pay_Status='UNPAID' where Order_id=?");
+                    ps.setInt(1, y);
+                    ps.execute();
+                    con.close();
+                }
+                catch (SQLException ex){
+                    System.out.println(ex);
+                }
+
+            } else if (e.getSource()==Cash){
+
+                try{
+
+                    Connection con = DriverManager.getConnection(url, user, password);
+                    PreparedStatement ps = con.prepareStatement("update orders set Pay_Mode='Cash', Pay_Status='UNPAID' where Order_id=?");
+                    ps.setInt(1, y);
+                    ps.execute();
+                    con.close();
+                }
+                catch (SQLException ex){
+                    System.out.println(ex);
+                }
+
+            } else if (e.getSource() == PayTm) {
+                d.browse(new URI("https://paytm.com/"));
+                try{
+                    Connection con = DriverManager.getConnection(url, user, password);
+                    PreparedStatement ps = con.prepareStatement("update orders set Pay_Mode='PayTm', Pay_Status='UNPAID' where Order_id=?");
+                    ps.setInt(1,y);
+                    ps.execute();
+                    con.close();
+                }
+                catch (SQLException ex){
+                    System.out.println(ex);
+                }
+            }
+            else if (e.getSource()==Review){
+                SwingUtilities.invokeLater(() -> {
+                    Review review = new Review(y); // Replace "42" with your order ID
+                   review.setVisible(true);
+                });
+                Pay.dispose();
+            }
+        }catch (IOException excp) {
+            System.out.println("ERROR");
+        }  catch (URISyntaxException excp) {
+            System.out.println("ERROR");
+        }
+    }
+}
